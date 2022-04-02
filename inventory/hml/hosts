@@ -1,0 +1,10 @@
+[mongo_master]
+172.20.53.37 mongodb_master=True
+
+[mongo_replicas]
+172.20.53.84
+172.20.53.81
+
+[mongo:children]
+mongo_master
+mongo_replicas

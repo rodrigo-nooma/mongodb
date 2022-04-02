@@ -1,34 +1,3 @@
-# Ansible role for MongoDB
-![Centos](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/centos.yml/badge.svg) ![Debian](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/debian.yml/badge.svg) ![Ubuntu](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/ubuntu.yml/badge.svg) ![Amazon Linux 2](https://github.com/UnderGreen/ansible-role-mongodb/actions/workflows/amazonlinux2.yml/badge.svg)
-
-Ansible role to install and manage [MongoDB](http://www.mongodb.org/).
-
-- Install and configure the MongoDB
-- Configure mongodb users
-- Configure authentication
-- Configure replication
-- Setup MMS automation agent;
-
-MongoDB support matrix:
-
-| Distribution   | < MongoDB 3.4 |    MongoDB 3.6     |    MongoDB 4.0     |   MongoDB 4.2      |   MongoDB 4.4      |
-| -------------- | :-----------: | :----------------: | :----------------: | :----------------: | :----------------: |
-| Ubuntu 16.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |        :x:         |
-| Ubuntu 18.04   |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: |        :x:         |
-| Ubuntu 20.04   |  :no_entry:   |        :x:         |        :x:         |        :x:         | :white_check_mark: |
-| Debian 9.x     |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Debian 10.x    |  :no_entry:   |        :x:         |        :x:         | :white_check_mark: | :white_check_mark: |
-| RHEL 7.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| RHEL 8.x       |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Amazon Linux 2 |  :no_entry:   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-
-- :white_check_mark: - fully tested
-- :x: - don't have official support
-- :no_entry: - MongoDB has reached EOL
-
-#### Variables
-
-```yaml
 # This variable is used to set source of MongoDB installation.
 # 'mongodb' - version provided by Debian-based distributions from their official package repositories.
 # 'mongodb-org' - version provided by MongoDB package repository.
@@ -57,7 +26,7 @@ mongodb_uid:
 mongodb_gid:
 mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' in mongodb_package) else 'mongodb' }}"
 ## net Options
-mongodb_net_bindip: 127.0.0.1 # Comma separated list of ip addresses to listen on
+mongodb_net_bindip: 0.0.0.0 # Comma separated list of ip addresses to listen on
 mongodb_net_http_enabled: false # Enable http interface
 mongodb_net_ipv6: false # Enable IPv6 support (disabled by default)
 mongodb_net_maxconns: 65536 # Max number of simultaneous connections
@@ -100,27 +69,6 @@ mongodb_replication_replset: # Enable replication <setname>[/<optionalseedhostli
 mongodb_replication_replindexprefetch: "all" # specify index prefetching behavior (if secondary) [none|_id_only|all]
 mongodb_replication_oplogsize: 1024 # specifies a maximum size in megabytes for the replication operation log
 
-## setParameter options
-# Configure setParameter option.
-# Example :
-mongodb_set_parameters:
-  {
-    "enableLocalhostAuthBypass": "true",
-    "authenticationMechanisms": "SCRAM-SHA-1,MONGODB-CR",
-  }
-
-## Extend config with arbitrary values
-# Example :
-mongodb_config:
-  replication:
-    - "enableMajorityReadConcern: false"
-
-# MMS Agent
-mongodb_mms_agent_pkg: https://cloud.mongodb.com/download/agent/monitoring/mongodb-mms-monitoring-agent_7.2.0.488-1_amd64.ubuntu1604.deb
-mongodb_mms_group_id: ""
-mongodb_mms_api_key: ""
-mongodb_mms_base_url: https://mms.mongodb.com
-
 # Log rotation
 mongodb_logrotate: true # Rotate mongodb logs.
 mongodb_logrotate_options:
@@ -151,90 +99,14 @@ mongodb_keyfile_content: |
   T+c73exupZFxItXs1Bnhe3djgE3MKKyYvxNUIbcTJoe7nhVMrwO/7lBSpVLvC4p3
   wR700U0LDaGGQpslGtiE56SemgoP
 
-# names and passwords for administrative users
-mongodb_user_admin_name: siteUserAdmin
-mongodb_user_admin_password: passw0rd
+mongodb_security_authorization: "enabled"
 
-mongodb_root_admin_name: siteRootAdmin
-mongodb_root_admin_password: passw0rd
+# names and passwords for administrative users
+mongodb_user_admin_name: admin
+mongodb_user_admin_password: ahX6oong
+
+mongodb_root_admin_name: root
+mongodb_root_admin_password: Yiix6too
 
 mongodb_root_backup_name: backupuser
-mongodb_root_backup_password: passw0rd
-```
-
-#### Usage
-
-Add `undergreen.mongodb` to your roles and set vars in your playbook file.
-
-Example vars for authorization:
-
-```yaml
-mongodb_security_authorization: "enabled"
-mongodb_users:
-  - {
-    name: testUser,
-    password: passw0rd,
-    roles: readWrite,
-    database: app_development
-}
-```
-
-Example vars for oplog user:
-
-```yaml
-mongodb_oplog_users:
-  - {
-    user: oplog,
-    password: passw0rd
-}
-```
-
-Required vars to change on production:
-
-```yaml
-mongodb_user_admin_password
-mongodb_root_admin_password
-mongodb_root_backup_password
-
-# if you use replication and authorization
-mongodb_security_keyfile
-```
-
-Example vars for replication:
-
-```yaml
-# It's a 'master' node
-mongodb_login_host: 192.168.56.2
-
-# mongodb_replication_params should be configured on each replica set node
-mongodb_replication_params:
-  - {
-      host_name: 192.168.56.2,
-      host_port: "{{ mongodb_net_port }}",
-      host_type: replica,
-    }
-  # host_type can be replica(default) and arbiter
-```
-
-And inventory file for replica set:
-
-```ini
-[mongo_master]
-192.158.56.2 mongodb_master=True # it is't a really master of MongoDB replica set,
-                                 # use this variable for replica set init only
-								 # or when master is moved from initial master node
-
-[mongo_replicas]
-192.168.56.3
-192.168.56.4
-
-[mongo:children]
-mongo_master
-mongo_replicas
-```
-
-Licensed under the GPLv2 License. See the [LICENSE.md](LICENSE.md) file for details.
-
-#### Feedback, bug-reports, requests, ...
-
-Are [welcome](https://github.com/UnderGreen/ansible-role-mongodb/issues)!
+mongodb_root_backup_password: ioR7quek
