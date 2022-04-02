@@ -8,19 +8,19 @@ mongodb_version: "4.4"
 mongodb_users:
    - {
      name: root,
-     password: Tlx564BB,
+     password: Yiix6too,
      roles: root,
      database: admin
    }
    - {
      name: admin,
-     password: Tlx564BBUser,
+     password: ahX6oong,
      roles: readWrite,
      database: admin
    }
    - {
      name: backupuser,
-     password: BkpMongo,
+     password: ioR7quek,
      roles: backup,
      database: admin
    }
