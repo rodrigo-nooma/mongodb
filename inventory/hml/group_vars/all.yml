@@ -51,10 +51,10 @@ mongodb_keyfile_content: |
 
 # names and passwords for administrative users
 mongodb_user_admin_name: admin
-mongodb_user_admin_password: Tlx564BB
+mongodb_user_admin_password: ahX6oong
 
 mongodb_root_admin_name: root
-mongodb_root_admin_password: Tlx564BB
+mongodb_root_admin_password: Yiix6too
 
 mongodb_root_backup_name: backupuser
-mongodb_root_backup_password: passw0rd
+mongodb_root_backup_password: ioR7quek
