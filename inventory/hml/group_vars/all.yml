@@ -1,83 +1,33 @@
-# This variable is used to set source of MongoDB installation.
-# 'mongodb' - version provided by Debian-based distributions from their official package repositories.
-# 'mongodb-org' - version provided by MongoDB package repository.
-# 'mongodb' is not included in th role test matrix and working of it is not guarantied.
-mongodb_package: mongodb-org
-
-# `mongodb_version` variable sets version of MongoDB.
-# Should be '3.6', '4.0', '4.2' or '4.4'. This role doesn't support MongoDB < 3.6.
-# I would recommend you to use the latest version of MongoDB.
+mongodb_login_host: "{{ hostvars[groups['mongo_master'][0]].inventory_hostname }}"
+mongodb_net_bindip: 0.0.0.0
+mongodb_pymongo_from_pip: true
+mongodb_pymongo_pip_version: 3.6.1
+mongodb_user_update_password: "on_create"                   # Install latest PyMongo via PIP or package manager
 mongodb_version: "4.4"
 
-mongodb_pymongo_from_pip: true # Install latest PyMongo via PIP or package manager
-mongodb_pymongo_pip_version: 3.6.1 # Choose PyMong version to install from pip. If not set use latest
-mongodb_user_update_password: "on_create" # MongoDB user password update default policy
-mongodb_manage_service: true
-mongodb_manage_systemd_unit: true
+mongodb_users:
+   - {
+     name: root,
+     password: Tlx564BB,
+     roles: root,
+     database: admin
+   }
+   - {
+     name: admin,
+     password: Tlx564BBUser,
+     roles: readWrite,
+     database: admin
+   }
+   - {
+     name: backupuser,
+     password: BkpMongo,
+     roles: backup,
+     database: admin
+   }
+  
 
-# Disable transparent hugepages on systemd debian based installations
-mongodb_disable_transparent_hugepages: false
-
-# You can enable or disable NUMA support
-mongodb_use_numa: true
-
-mongodb_user: "{{ 'mongod' if ('RedHat' == ansible_os_family) else 'mongodb' }}"
-mongodb_uid:
-mongodb_gid:
-mongodb_daemon_name: "{{ 'mongod' if ('mongodb-org' in mongodb_package) else 'mongodb' }}"
-## net Options
-mongodb_net_bindip: 0.0.0.0 # Comma separated list of ip addresses to listen on
-mongodb_net_http_enabled: false # Enable http interface
-mongodb_net_ipv6: false # Enable IPv6 support (disabled by default)
-mongodb_net_maxconns: 65536 # Max number of simultaneous connections
-mongodb_net_port: 27017 # Specify port number
-
-## processManagement Options
-mongodb_processmanagement_fork: false # Fork server process
-
-## security Options
-# Disable or enable security. Possible values: 'disabled', 'enabled'
-mongodb_security_authorization: "disabled"
-mongodb_security_keyfile: /etc/mongodb-keyfile # Specify path to keyfile with password for inter-process authentication
-
-## storage Options
-mongodb_storage_dbpath: /data/db # Directory for datafiles
-mongodb_storage_dirperdb: false # Use one directory per DB
-
-# The storage engine for the mongod database
-mongodb_storage_engine: "wiredTiger"
-# mmapv1 specific options
-mongodb_storage_quota_enforced: false # Limits each database to a certain number of files
-mongodb_storage_quota_maxfiles: 8 # Number of quota files per DB
-mongodb_storage_smallfiles: false # Very useful for non-data nodes
-
-mongodb_storage_journal_enabled: true # Enable journaling
-mongodb_storage_prealloc: true # Disable data file preallocation
-
-# WiredTiger Options
-mongodb_wiredtiger_cache_size: 1 # Cache size for wiredTiger in GB
-
-## systemLog Options
-## The destination to which MongoDB sends all log output. Specify either 'file' or 'syslog'.
-## If you specify 'file', you must also specify mongodb_systemlog_path.
-mongodb_systemlog_destination: "file"
-mongodb_systemlog_logappend: true # Append to logpath instead of over-writing
-mongodb_systemlog_path: /var/log/mongodb/{{ mongodb_daemon_name }}.log # Log file to send write to instead of stdout
-
-## replication Options
-mongodb_replication_replset: rs0 # Enable replication <setname>[/<optionalseedhostlist>]
-mongodb_replication_replindexprefetch: "all" # specify index prefetching behavior (if secondary) [none|_id_only|all]
-mongodb_replication_oplogsize: 1024 # specifies a maximum size in megabytes for the replication operation log
-
-# Log rotation
-mongodb_logrotate: true # Rotate mongodb logs.
-mongodb_logrotate_options:
-  - compress
-  - copytruncate
-  - daily
-  - dateext
-  - rotate 7
-  - size 10M
+mongodb_security_authorization: "enabled"
+mongodb_replication_replset: "rs0"
 
 # password for inter-process authentication
 # please regenerate this file on production environment with command 'openssl rand -base64 741'
@@ -99,14 +49,12 @@ mongodb_keyfile_content: |
   T+c73exupZFxItXs1Bnhe3djgE3MKKyYvxNUIbcTJoe7nhVMrwO/7lBSpVLvC4p3
   wR700U0LDaGGQpslGtiE56SemgoP
 
-mongodb_security_authorization: "enabled"
-
 # names and passwords for administrative users
 mongodb_user_admin_name: admin
-mongodb_user_admin_password: ahX6oong
+mongodb_user_admin_password: Tlx564BB
 
 mongodb_root_admin_name: root
-mongodb_root_admin_password: Yiix6too
+mongodb_root_admin_password: Tlx564BB
 
 mongodb_root_backup_name: backupuser
-mongodb_root_backup_password: ioR7quek
+mongodb_root_backup_password: passw0rd
