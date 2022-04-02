@@ -5,25 +5,25 @@ mongodb_pymongo_pip_version: 3.6.1
 mongodb_user_update_password: "on_create"                   # Install latest PyMongo via PIP or package manager
 mongodb_version: "4.4"
 
-mongodb_users:
-   - {
-     name: root,
-     password: Yiix6too,
-     roles: root,
-     database: admin
-   }
-   - {
-     name: admin,
-     password: ahX6oong,
-     roles: readWrite,
-     database: admin
-   }
-   - {
-     name: backupuser,
-     password: ioR7quek,
-     roles: backup,
-     database: admin
-   }
+#mongodb_users:
+#   - {
+#     name: root,
+#     password: Yiix6too,
+#     roles: root,
+#     database: admin
+#   }
+#   - {
+#     name: admin,
+#     password: ahX6oong,
+#     roles: readWrite,
+#     database: admin
+#   }
+#   - {
+#     name: backupuser,
+#     password: ioR7quek,
+#     roles: backup,
+#     database: admin
+#   }
   
 
 mongodb_security_authorization: "enabled"
